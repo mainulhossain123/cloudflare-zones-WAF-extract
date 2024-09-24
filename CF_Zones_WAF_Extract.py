@@ -1,7 +1,7 @@
 import os
 import requests
 import csv
-from datetime import datetime
+from datetime import datetime, timezone
 import time
 
 # Create a session to reuse HTTP connections
