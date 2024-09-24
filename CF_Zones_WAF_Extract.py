@@ -7,7 +7,7 @@ import time
 # Create a session to reuse HTTP connections
 session = requests.Session()
 
-def get_zones(api_key, page, per_page):
+def get_zones(api_key, account_name, page, per_page):
     url = "https://api.cloudflare.com/client/v4/zones"
     headers = {
         "Authorization": f"Bearer {api_key}",
@@ -22,7 +22,8 @@ def get_zones(api_key, page, per_page):
         if response.status_code == 200:
             data = response.json()
             if data['success'] and data['result']:
-                dxp_zones = [zone for zone in data['result'] if zone['account']['name'] == 'DXP Customers']
+                # Filter zones based on the account name provided by the user
+                dxp_zones = [zone for zone in data['result'] if zone['account']['name'] == account_name]
                 return True, dxp_zones
         else:
             print("Failed to fetch zones:", response.text)
@@ -71,12 +72,13 @@ def write_to_csv(zone_data, api_key):
 # Example usage
 if __name__ == "__main__":
     api_key = os.getenv('API_KEY')  # Get API token from environment variable
+    account_name = os.getenv('ACCOUNT_NAME')  # Get account name from environment variable
 
     page = 1
     per_page = 1000
     retry_delay = 1  # Initial delay time
     while True:
-        success, zones = get_zones(api_key, page, per_page)
+        success, zones = get_zones(api_key, account_name, page, per_page)
         if success:
             if zones:
                 for zone in zones:
