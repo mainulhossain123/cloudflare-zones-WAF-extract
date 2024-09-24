@@ -46,7 +46,7 @@ def get_firewall_custom_rules(zone_id, api_key):
     return None
 
 def write_to_csv(zone_data, api_key):
-    current_date = datetime.now().strftime("%Y-%m-%d")
+    current_date = datetime.now(timezone.utc).strftime("%Y-%m-%d_%H-%M-%S")
     filename = f'/app/firewall_custom_rules_{current_date}.csv'  # Save file in /app directory in Docker
     with open(filename, mode='a', newline='') as file:
         writer = csv.writer(file)
