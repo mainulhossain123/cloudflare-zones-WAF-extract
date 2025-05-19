@@ -1,103 +1,113 @@
-# Cloudflare_Zones_WAF_Extraction_API_Integration
-Simple Python script for extracting WAF Bypass rules for Cloudflare zones, generating output to a CSV file
+# 🚀 Cloudflare Zones WAF Rules Extractor
 
-## Note
-The code, is for downloading Cloudflare zones WAF information but this can be modified to enter more parameters for more precise information extraction.
+This script extracts **Custom Firewall Rules** from all **Cloudflare Zones** under a specific account and filters them by user-defined rule action (e.g., `skip`, `block`, `challenge`). It generates a detailed CSV report for further analysis or audit automation.
 
-## Prerequisites 
-* **Python 3.12 or higher**. Download it from https://www.python.org/downloads/
-* **IDE** - I personally used Visual Studio Code but it is upto your preference.
-* **Libraries - requests**: Run in Terminal of enviornment or in command prompt **pip install requests**
-* **Libraries - datetime**: Run in Terminal of enviornment or in command prompt **pip install datetime**
-* **Libraries - csv**: Run in Terminal of enviornment or in command prompt **pip install csv**
-* **Cloudflare API Key**. You must have the API key enabled with minimum Read permissions from your Cloudflare account.
+Built for **enterprise scalability**, it supports parallel processing, retry logic, and secure token-based access. Ideal for DevOps, SecOps, and cloud governance use cases.
 
-## Languages, Frameworks and API calls used in the script
-The Script uses the following:
+---
 
-- *[Python 3.12.3](https://www.python.org/downloads/release/python-3123/)* as the primary Programming Language.
-- *[Visual Studio Code](https://code.visualstudio.com/download)* as the IDE.
-- *[Cloudflare V4 Zone entrypoint HTTP firewall request Check](https://developers.cloudflare.com/api/operations/getZoneEntrypointRuleset)* as the secondary endpoint for WAF Authorization header.
-- *[Cloudflare V4 Zone list Check](https://developers.cloudflare.com/api/operations/zones-get)* as the primary endpoint for zone Authorization header.
-- *[Requests Module](https://pypi.org/project/requests/)* allows us to make HTTP/1.1 request calls.
-- *[Datetime Module](https://docs.python.org/3/library/datetime.html)* for usage of current date and time on file naming schemes
-- *[Time Module](https://docs.python.org/3/library/time.html)* primarily used in the script to produce delays in the frequency of each request in case of rate-limiting issues
-- *[CSV Module](https://docs.python.org/3/library/csv.html)* allows us to write or read CSV files, in this case write all retrieved data to a CSV file.
+## 📦 Features
 
-## Legal
-* This code is in no way affiliated with, authorized, maintained, sponsored or endorsed by Cloudflare or any of its affiliates or subsidiaries. This is an independent and unofficial software. Use at your own risk. Commercial use of this code/repo is strictly prohibited.
+- 🔍 Fetches **Custom HTTP Firewall Rules** per zone
+- ⚙️ Filters rules by **action** (e.g., `skip`, `block`, etc.)
+- 📄 Exports data into a **timestamped CSV**
+- 🧵 Parallel zone processing using `ThreadPoolExecutor`
+- 🔁 Built-in retry logic for API resilience
+- ✅ Ready for **enterprise pipelines** (CI/CD, CRON, GitHub Actions)
 
-## Basic Usage
+---
 
-### API_Key Replacement
-Simply replace the value in **api_key** with your own API key and run the script. 
+## 🧾 CSV Output
 
-#Set your Cloudflare API key
-```
-api_key = 'YOUR_API_KEY'
-```
+Each rule is saved with the following fields:
 
-### User Input
-pagination is set for 1000 per page **please set your per_page value as per your needs for better efficiency**. Also a retry delay method is also implemented so that code does not skip or stop in case of rate limiting issues.
-```python
-page = 1
-per_page = 1000
-retry_delay = 1  # Initial delay time
-while True:
-    success, zones = get_zones(api_token, page, per_page)
-    if success:
-        if zones:
-            for zone in zones:
-                write_to_csv(zone)
-            page += 1
-            retry_delay = 1  # Reset the retry delay on successful fetch
-            # Introduce a delay between requests to avoid rate limit issues
-            time.sleep(1)
-        else:
-            print("No more zones to process.")
-            break
-    else:
-        # Exponential backoff: Increase delay time exponentially upon rate limit errors
-        retry_delay *= 2  # Double the delay time
-        print(f"Retrying in {retry_delay} seconds due to errors.")
-        time.sleep(retry_delay)
-        if retry_delay > 60:  # Maximum delay threshold to prevent infinite looping
-            print("Maximum retry delay reached. Exiting.")
-            break
+| Zone Name | Rule ID | Version | Action | Expression | Description | Last Updated | Enabled |
+|-----------|---------|---------|--------|------------|-------------|--------------|---------|
+
+📁 Example output filename: firewall_custom_rules_2025-05-19.csv
+
+
+---
+
+## 🔐 Environment Variables
+
+| Variable        | Description                                             | Required | Default           |
+|----------------|---------------------------------------------------------|----------|-------------------|
+| `API_KEY`       | Cloudflare API token with zone/ruleset read permissions | ✅       | –                 |
+| `ACCOUNT_NAME`  | Cloudflare account name to scope zone fetch             | ✅       | `DXP Customers`   |
+| `RULE_ACTION`   | Rule action to filter for (`skip`, `block`, `challenge`)| ❌       | `skip`            |
+
+Set these in your shell or CI/CD environment.
+
+```bash
+export API_KEY="your_token_here"
+export ACCOUNT_NAME="Your Cloudflare Account Name"
+export RULE_ACTION="skip"
 ```
 
-### Extracted data and CSV File
-The data will be saved in a CSV file **firewall_custom_rules_{current_date}.csv**, which you can change to your desire and also include a path for saving if you wish but by default. For the current code the following information below are being written over to the CSV file as shown below. The print statements are there simply for showing progress of the code.
-```python
-def write_to_csv(zone_data):
-    current_date = datetime.now().strftime("%Y-%m-%d")
-    filename = f'firewall_custom_rules_{current_date}.csv'
-    with open(filename, mode='a', newline='') as file:
-        writer = csv.writer(file)
-        zone_name = zone_data['name']
-        zone_id = zone_data['id']
-        zone_rules = get_firewall_custom_rules(zone_id, api_token)
-        if zone_rules and 'result' in zone_rules:
-            result = zone_rules['result']
-            filtered_rules = [rule for rule in result['rules'] if rule['action'] == 'skip']
-            for rule in filtered_rules:
-                writer.writerow([zone_name, rule['id'], rule['version'], rule['action'], rule['expression'], rule['description'], rule['last_updated'], rule['enabled']])
-                print(f"Zone Name: {zone_name}")
-                print(f"Rule ID: {rule['id']}")
-                print(f"Rule Version: {rule['version']}")
-                print(f"Action: {rule['action']}")
-                print(f"Expression: {rule['expression']}")
-                print(f"Description: {rule['description']}")
-                print(f"Last Updated: {rule['last_updated']}")
-                print(f"Rule Status: {rule['enabled']}")
-                print("")
+⚙️ How to Use
+1. Install Dependencies
+2. 
+```bash
+pip install requests
 ```
 
-### Disclaimer
-- I have not used multi-threading in this script unlike previous scripts as due to varying number of zones and dataset size, Cloudflare has a tendency to run into ratelimiting issues, particularly with multi-threading for multiple requests, which was causing loss of data.
-
-- I have written this particular code for including all information about CF Zones Bypass rules but that can easily be changed by changiing the "action" rule below
-```python
-filtered_rules = [rule for rule in result['rules'] if rule['action'] == 'skip']
+2. Clone and Navigate
+```bash
+git clone https://github.com/mainulhossain123/cloudflare-zones-WAF-extract.git
+cd cloudflare-zones-WAF-extract
 ```
-simply remove the filtered line altogether or change the action to your particular needs.
+
+3. Run the Script
+```bash
+python CF_Zones_WAF_Extract.py
+```
+
+This creates a CSV file in /app/, containing rule data filtered by your RULE_ACTION.
+
+💡 Deployment Tips
+This script is designed to run:
+
+* As a scheduled cron job
+
+* Inside a Docker container
+
+* Through CI/CD pipelines (e.g., GitHub Actions)
+
+* In Kubernetes Jobs for periodic audits
+
+🔒 Security Tip: Use secrets management tools (e.g., GitHub Secrets, AWS SSM, Azure Key Vault) to inject API_KEY.
+
+🧰 API Access Requirements
+Your API token must include:
+
+* Zone:Read
+
+* Zone Rulesets: Read
+
+🧪 Sample Output Logs
+
+```yaml
+Zone Name: example.com, Rule ID: 82ab23..., Action: skip
+Zone Name: anotherdomain.org, Rule ID: c3fd98..., Action: skip
+```
+
+🛠️ Best Practices
+* 🧵 Tune max_workers in ThreadPoolExecutor based on API rate limits
+
+* 📊 Run monthly for firewall auditing
+
+* 📁 Store CSV outputs in S3, Azure Blob, or GCS for long-term access
+
+* 🚨 Integrate with Slack/email alerts if high-risk rules are found
+
+🤝 Contributing
+We follow enterprise standards for contributions:
+
+* Fork the repo
+
+* Create a feature branch (feature/my-feature)
+
+* Commit with clear messages and submit a PR
+
+* Follow PEP8 and Pythonic best practices
