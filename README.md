@@ -47,7 +47,6 @@ export RULE_ACTION="skip"
 
 ⚙️ How to Use
 1. Install Dependencies
-2. 
 ```bash
 pip install requests
 ```
