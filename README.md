@@ -65,6 +65,7 @@ python CF_Zones_WAF_Extract.py
 
 This creates a CSV file in /app/, containing rule data filtered by your RULE_ACTION.
 
+
 💡 Deployment Tips
 This script is designed to run:
 
@@ -77,6 +78,7 @@ This script is designed to run:
 * In Kubernetes Jobs for periodic audits
 
 🔒 Security Tip: Use secrets management tools (e.g., GitHub Secrets, AWS SSM, Azure Key Vault) to inject API_KEY.
+
 
 🧰 API Access Requirements
 Your API token must include:
@@ -100,6 +102,7 @@ Zone Name: anotherdomain.org, Rule ID: c3fd98..., Action: skip
 * 📁 Store CSV outputs in S3, Azure Blob, or GCS for long-term access
 
 * 🚨 Integrate with Slack/email alerts if high-risk rules are found
+
 
 🤝 Contributing
 We follow enterprise standards for contributions:
