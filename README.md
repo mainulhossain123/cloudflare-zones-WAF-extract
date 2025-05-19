@@ -78,7 +78,6 @@ This script is designed to run:
 
 🔒 Security Tip: Use secrets management tools (e.g., GitHub Secrets, AWS SSM, Azure Key Vault) to inject API_KEY.
 
-
 🧰 API Access Requirements
 Your API token must include:
 
