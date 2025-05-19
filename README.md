@@ -65,7 +65,7 @@ python CF_Zones_WAF_Extract.py
 This creates a CSV file in /app/, containing rule data filtered by your RULE_ACTION.
 
 
-##💡 Deployment Tips
+## 💡 Deployment Tips
 This script is designed to run:
 
 * As a scheduled cron job
@@ -78,7 +78,7 @@ This script is designed to run:
 
 🔒 Security Tip: Use secrets management tools (e.g., GitHub Secrets, AWS SSM, Azure Key Vault) to inject API_KEY.
 
-##🧰 API Access Requirements
+## 🧰 API Access Requirements
 Your API token must include:
 
 * Zone:Read
@@ -92,7 +92,7 @@ Zone Name: example.com, Rule ID: 82ab23..., Action: skip
 Zone Name: anotherdomain.org, Rule ID: c3fd98..., Action: skip
 ```
 
-##🛠️ Best Practices
+## 🛠️ Best Practices
 * 🧵 Tune max_workers in ThreadPoolExecutor based on API rate limits
 
 * 📊 Run monthly for firewall auditing
@@ -102,7 +102,7 @@ Zone Name: anotherdomain.org, Rule ID: c3fd98..., Action: skip
 * 🚨 Integrate with Slack/email alerts if high-risk rules are found
 
 
-##🤝 Contributing
+## 🤝 Contributing
 We follow enterprise standards for contributions:
 
 * Fork the repo
@@ -113,10 +113,10 @@ We follow enterprise standards for contributions:
 
 * Follow PEP8 and Pythonic best practices
 
-##📝 License
+## 📝 License
 This project is licensed under the MIT License
 
-📬 Contact
+## 📬 Contact
 For issues, questions, or feature requests, please contact:
 Author: Mainul Hossain
 Email: hossainmainul83@gmail.com
