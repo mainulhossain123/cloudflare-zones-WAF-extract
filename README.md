@@ -112,3 +112,11 @@ We follow enterprise standards for contributions:
 * Commit with clear messages and submit a PR
 
 * Follow PEP8 and Pythonic best practices
+
+📝 License
+This project is licensed under the MIT License
+
+📬 Contact
+For issues, questions, or feature requests, please contact:
+Author: Mainul Hossain
+Email: hossainmainul83@gmail.com
