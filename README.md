@@ -113,7 +113,7 @@ We follow enterprise standards for contributions:
 
 * Follow PEP8 and Pythonic best practices
 
-📝 License
+#📝 License
 This project is licensed under the MIT License
 
 📬 Contact
