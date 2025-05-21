@@ -118,7 +118,7 @@ if __name__ == "__main__":
                 break
 
     # Process zones using ThreadPoolExecutor
-    with ThreadPoolExecutor(max_workers=10) as executor:  # Adjust max_workers based on the rate limit
+    with ThreadPoolExecutor(max_workers=12) as executor:  # Adjust max_workers based on the rate limit
         future_to_zone = {executor.submit(process_zone, zone, api_key, rule_action, filename): zone for zone in all_zones}
         for future in as_completed(future_to_zone):
             zone = future_to_zone[future]
